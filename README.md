@@ -98,11 +98,11 @@ fn main() {
 In summary, macros are essential in Rust for generating repetitive code patterns efficiently and consistently. They provide a way to write code that writes other code, which is particularly useful in scenarios requiring extensive boilerplate or when implementing domain-specific languages within Rust.
 
 Sources
-[1] Rust Macros: Practical Examples and Best Practices - Earthly Blog https://earthly.dev/blog/rust-macros/
-[2] A Methodical Introduction - The Little Book of Rust Macros https://veykril.github.io/tlborm/decl-macros/macros-methodical.html
-[3] The Rust Programming Language http://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/book/second-edition/appendix-04-macros.html
-[4] Macros - The Rust Programming Language https://doc.rust-lang.org/book/ch19-06-macros.html
-[5] Macros in Rust: A tutorial with examples - LogRocket Blog https://blog.logrocket.com/macros-in-rust-a-tutorial-with-examples/
-[6] A Practical Introduction - The Little Book of Rust Macros https://veykril.github.io/tlborm/decl-macros/macros-practical.html
-[7] Conventions: macro vs function https://users.rust-lang.org/t/conventions-macro-vs-function/1914
-[8] Can Someone Explain Macros to a newbie : r/rust - Reddit https://www.reddit.com/r/rust/comments/14vk75h/can_someone_explain_macros_to_a_newbie/
+1. Rust Macros: Practical Examples and Best Practices - Earthly Blog https://earthly.dev/blog/rust-macros/
+2. A Methodical Introduction - The Little Book of Rust Macros https://veykril.github.io/tlborm/decl-macros/macros-methodical.html
+3. The Rust Programming Language http://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/book/second-edition/appendix-04-macros.html
+4. Macros - The Rust Programming Language https://doc.rust-lang.org/book/ch19-06-macros.html
+5. Macros in Rust: A tutorial with examples - LogRocket Blog https://blog.logrocket.com/macros-in-rust-a-tutorial-with-examples/
+6. A Practical Introduction - The Little Book of Rust Macros https://veykril.github.io/tlborm/decl-macros/macros-practical.html
+7. Conventions: macro vs function https://users.rust-lang.org/t/conventions-macro-vs-function/1914
+8. Can Someone Explain Macros to a newbie : r/rust - Reddit https://www.reddit.com/r/rust/comments/14vk75h/can_someone_explain_macros_to_a_newbie/

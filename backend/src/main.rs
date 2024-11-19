@@ -1,7 +1,4 @@
-use axum::{
-    routing::get,
-    Router,
-};
+use axum::{routing::get, Router};
 
 mod controllers;
 use controllers::root::controller::Controller as RootController;
@@ -11,8 +8,7 @@ use pkgs::db_helper;
 
 #[tokio::main]
 async fn main() {
-    let app = Router::new().
-        route("/", get(|| async { "Hello, World!" }));
+    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
 
     ////////////////////////////////////////////////////////////////////////////
 

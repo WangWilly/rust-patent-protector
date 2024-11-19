@@ -18,17 +18,17 @@ struct CtrlState {
     name: String,
 }
 
-pub struct Controller{
+pub struct Controller {
     m: CtrlState,
 }
 
 impl Controller {
     pub fn new(db: Pool<ConnectionManager<PgConnection>>) -> Self {
-        Controller{
-            m: CtrlState{
+        Controller {
+            m: CtrlState {
                 db,
                 name: "root".to_string(),
-            }
+            },
         }
     }
 
@@ -51,7 +51,7 @@ async fn create_test_log(State(state): State<CtrlState>) -> impl IntoResponse {
     match create::create(&state.db) {
         Ok(test_log) => {
             format!("Created test log: {}", test_log.id)
-        },
+        }
         Err(e) => {
             format!("Failed to create test log: {}", e)
         }
@@ -64,16 +64,17 @@ async fn list_all_test_logs(State(state): State<CtrlState>) -> impl IntoResponse
             let mut res = String::new();
             for test_log in test_logs {
                 res.push_str(&format!(
-                    "Test log: {} created at: {}\n", 
+                    "Test log: {} created at: {}\n",
                     test_log.id,
-                    test_log.created_at 
+                    test_log
+                        .created_at
                         .map(|t| time::iso8601(&t))
                         .unwrap_or("None".to_string())
                 ));
             }
 
             res
-        },
+        }
         Err(e) => {
             format!("Failed to list test logs: {}", e)
         }

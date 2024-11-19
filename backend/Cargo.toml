@@ -5,4 +5,6 @@ edition = "2021"
 
 [dependencies]
 axum = "0.7.9"
+chrono = "0.4.38"
+diesel = { version = "2.2.4", features = ["r2d2", "postgres"] }
 tokio = { version = "1.41.1", features = ["full"] }

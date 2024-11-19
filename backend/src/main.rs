@@ -5,10 +5,15 @@ use controllers::root::controller::Controller as RootController;
 
 mod pkgs;
 use pkgs::db_helper;
+use pkgs::errors::handler_404;
+
+////////////////////////////////////////////////////////////////////////////////
 
 #[tokio::main]
 async fn main() {
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let app = Router::new()
+        .route("/", get(|| async { "Hello, World!" }))
+        .fallback(handler_404);
 
     ////////////////////////////////////////////////////////////////////////////
 

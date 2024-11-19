@@ -9,8 +9,11 @@ use axum::{
     Router,
 };
 
-use crate::pkgs::repos::test_log::{create, list_all};
+use crate::pkgs::errors::handler_404;
+use crate::pkgs::repos::test_log::{create::create, list_all::list_all};
 use crate::pkgs::time;
+
+////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Clone)]
 struct CtrlState {
@@ -21,6 +24,8 @@ struct CtrlState {
 pub struct Controller {
     m: CtrlState,
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 impl Controller {
     pub fn new(db: Pool<ConnectionManager<PgConnection>>) -> Self {
@@ -34,6 +39,7 @@ impl Controller {
 
     pub fn register(&self, router: Router) -> Router {
         let sub_router = Router::new()
+            .fallback(handler_404)
             .route("/ruok", get(ruok))
             .route("/testLog", post(create_test_log))
             .route("/testLogs", get(list_all_test_logs))
@@ -43,12 +49,14 @@ impl Controller {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 async fn ruok(State(state): State<CtrlState>) -> impl IntoResponse {
     format!("I am ok, my name is {}", state.name)
 }
 
 async fn create_test_log(State(state): State<CtrlState>) -> impl IntoResponse {
-    match create::create(&state.db) {
+    match create(&state.db) {
         Ok(test_log) => {
             format!("Created test log: {}", test_log.id)
         }
@@ -59,7 +67,7 @@ async fn create_test_log(State(state): State<CtrlState>) -> impl IntoResponse {
 }
 
 async fn list_all_test_logs(State(state): State<CtrlState>) -> impl IntoResponse {
-    match list_all::list_all(&state.db) {
+    match list_all(&state.db) {
         Ok(test_logs) => {
             let mut res = String::new();
             for test_log in test_logs {

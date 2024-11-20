@@ -9,9 +9,8 @@ if [ "$isDev" = "dev" ]; then
     echo "Running in development mode"
     set -a && source ${PROJ_DIR}/dev.env && set +a
 
-    # Start the backend server
     cd ${PROJ_DIR}
-    cargo run
+    diesel migration run
 else
     echo "Running in production mode"
 fi

@@ -1,0 +1,30 @@
+////////////////////////////////////////////////////////////////////////////////
+/// Toy: Closures
+///
+/// https://stackoverflow.com/questions/25445761/returning-a-closure-from-a-function
+/// https://doc.rust-lang.org/rust-by-example/fn/closures.html
+/// - Closures are anonymous
+///
+////////////////////////////////////////////////////////////////////////////////
+/// String concatenation
+
+fn make_str_adder<'a>(s1: &'a String) -> impl Fn(&'a String) -> String {
+    move |s2: &'a String| s1.clone() + s2
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+
+fn main() {
+    let str1 = String::from("first ");
+    let str2 = String::from("second ");
+    let str3 = String::from("third ");
+
+    let fn1 = make_str_adder(&str1);
+
+    println!("{}", fn1(&str2));
+    println!("{}", fn1(&str3));
+
+    ////////////////////////////////////////////////////////////////////////////
+}

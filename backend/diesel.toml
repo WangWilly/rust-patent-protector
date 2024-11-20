@@ -6,4 +6,4 @@ file = "src/pkgs/schema.rs"
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 
 [migrations_directory]
-dir = "/Users/willywangkaa/Projects/patient_protector/backend/migrations"
+dir = "migrations"

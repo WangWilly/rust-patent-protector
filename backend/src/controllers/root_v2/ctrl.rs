@@ -9,7 +9,6 @@ use axum::{
     Router,
 };
 
-use crate::pkgs::errors::handler_404;
 use crate::pkgs::repos::test_log::{create::create, list_all::list_all};
 use crate::pkgs::time;
 
@@ -21,32 +20,19 @@ struct CtrlState {
     name: String,
 }
 
-pub struct Controller {
-    m: CtrlState,
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
-impl Controller {
-    pub fn new(db: Pool<ConnectionManager<PgConnection>>) -> Self {
-        Controller {
-            m: CtrlState {
-                db,
-                name: "root".to_string(),
-            },
-        }
-    }
+pub fn new(db: Pool<ConnectionManager<PgConnection>>) -> Router {
+    let s = CtrlState {
+        db: db.clone(),
+        name: "root_v2".to_string(),
+    };
 
-    pub fn register(&self, router: Router) -> Router {
-        let sub_router = Router::new()
-            .fallback(handler_404)
-            .route("/ruok", get(ruok))
-            .route("/testLog", post(create_test_log))
-            .route("/testLogs", get(list_all_test_logs))
-            .with_state(self.m.clone());
-
-        router.nest("/root", sub_router)
-    }
+    Router::new()
+        .route("/root/v2/ruok", get(ruok))
+        .route("/root/v2/testLog", post(create_test_log))
+        .route("/root/v2/testLogs", get(list_all_test_logs))
+        .with_state(s)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

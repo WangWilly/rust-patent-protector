@@ -57,3 +57,7 @@ To illustrate the necessity of using macros in Rust, let's consider a situation 
 Lifetimes are a fundamental concept in Rust that help the compiler ensure memory safety without the need for a garbage collector. Understanding lifetimes is crucial for writing safe and efficient Rust code.
 
 [Read more](./docs/lifetime.md)
+
+### Logging in Rust
+
+- https://stackoverflow.com/questions/75009289/how-to-enable-logging-tracing-with-axum

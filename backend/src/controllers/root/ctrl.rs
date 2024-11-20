@@ -1,3 +1,4 @@
+use crate::pkgs::ctx::Ctx;
 use diesel::prelude::*;
 use diesel::r2d2::ConnectionManager;
 use diesel::r2d2::Pool;
@@ -11,6 +12,8 @@ use axum::{
 
 use crate::pkgs::repos::test_log::{create::create, list_all::list_all};
 use crate::pkgs::time;
+
+use tracing::info;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -37,11 +40,14 @@ pub fn new(db: Pool<ConnectionManager<PgConnection>>) -> Router {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-async fn ruok(State(state): State<CtrlState>) -> impl IntoResponse {
+async fn ruok(ctx: Ctx, State(state): State<CtrlState>) -> impl IntoResponse {
+    info!("ruok - {:?}", ctx);
     format!("I am ok, my name is {}", state.name)
 }
 
-async fn create_test_log(State(state): State<CtrlState>) -> impl IntoResponse {
+async fn create_test_log(ctx: Ctx, State(state): State<CtrlState>) -> impl IntoResponse {
+    info!("create_test_log - {:?}", ctx);
+
     match create(&state.db) {
         Ok(test_log) => {
             format!("Created test log: {}", test_log.id)
@@ -52,7 +58,9 @@ async fn create_test_log(State(state): State<CtrlState>) -> impl IntoResponse {
     }
 }
 
-async fn list_all_test_logs(State(state): State<CtrlState>) -> impl IntoResponse {
+async fn list_all_test_logs(ctx: Ctx, State(state): State<CtrlState>) -> impl IntoResponse {
+    info!("list_all_test_logs - {:?}", ctx);
+
     match list_all(&state.db) {
         Ok(test_logs) => {
             let mut res = String::new();

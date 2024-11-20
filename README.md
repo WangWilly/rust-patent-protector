@@ -61,3 +61,10 @@ Lifetimes are a fundamental concept in Rust that help the compiler ensure memory
 ### Logging in Rust
 
 - https://stackoverflow.com/questions/75009289/how-to-enable-logging-tracing-with-axum
+
+### Error Handling in Rust
+
+You should use `core::result::Result` when you need to represent the outcome of an operation that can either succeed or fail. This type is particularly useful in functions that may encounter errors and need to propagate them to the caller.
+
+[Read more](./docs/error.md)
+

@@ -1,4 +1,5 @@
 use axum::{routing::get, Router};
+use axum::middleware::from_fn;
 
 mod controllers;
 use controllers::root::ctrl::new as new_root_router;
@@ -9,7 +10,10 @@ use pkgs::db_helper::get_connection_pool;
 use pkgs::errors::handler_404;
 
 use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
-use tracing::{Level, info};
+use tracing::{info, Level};
+
+mod middlewares;
+use middlewares::ctx::ctx_constructor;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -44,6 +48,9 @@ async fn main() {
         .merge(root_router)
         .merge(root_v2_router)
         .fallback(handler_404)
+        .layer(
+            from_fn(ctx_constructor)
+        )
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))

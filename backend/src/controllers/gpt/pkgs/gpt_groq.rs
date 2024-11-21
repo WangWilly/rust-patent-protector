@@ -3,11 +3,12 @@ use crate::pkgs::dtos::{
 };
 use reqwest::header::HeaderMap;
 use reqwest::{Client, RequestBuilder};
-use serde_json::json;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Clone)]
 pub struct GroqConfig {
     pub api_key: String,
 }
@@ -22,6 +23,7 @@ impl GroqConfig {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Clone)]
 pub struct Groq {
     api_key: String,
     client: Client,
@@ -51,14 +53,14 @@ impl Groq {
         headers
     }
 
-    fn base_body() -> HashMap<String, String> {
-        let mut body: HashMap<String, String> = HashMap::new();
-        body.insert("model".to_string(), "llama3-8b-8192".to_string());
-        body.insert("temperature".to_string(), "0".to_string());
+    fn base_body() -> HashMap<String, Value> {
+        let mut body: HashMap<String, Value> = HashMap::new();
+        body.insert("model".to_string(), json!("llama3-8b-8192"));
+        body.insert("temperature".to_string(), json!(0));
         body
     }
 
-    fn build_post_request(&self, body: HashMap<String, String>) -> RequestBuilder {
+    fn build_post_request(&self, body: HashMap<String, Value>) -> RequestBuilder {
         let headers = self.base_headers();
         self.client
             .post("https://api.groq.com/openai/v1/chat/completions")
@@ -69,7 +71,7 @@ impl Groq {
     ////////////////////////////////////////////////////////////////////////////
     /// v1
 
-    async fn assess_product_v1(
+    pub async fn assess_product_v1(
         &self,
         patent: &Patent,
         product: &Product,
@@ -86,21 +88,21 @@ impl Groq {
         ]);
 
         let mut body = Self::base_body();
-        body.insert("messages".to_string(), msg_json.to_string());
+        body.insert("messages".to_string(), msg_json);
 
         let request = self.build_post_request(body);
-        let response = request.send().await;
-        if response.is_err() {
-            return Err(response.err().unwrap());
+        let response_raw = request.send().await;
+        if response_raw.is_err() {
+            return Err(response_raw.err().unwrap());
         }
 
-        let json_response = response.unwrap().json().await;
+        let json_response = response_raw.unwrap().json().await;
         if json_response.is_err() {
             return Err(json_response.err().unwrap());
         }
 
-        let response_json: serde_json::Value = json_response.unwrap();
-        let response_str = response_json["choices"][0]["message"]["content"]
+        let response: Value = json_response.unwrap();
+        let response_str = response["choices"][0]["message"]["content"]
             .as_str()
             .unwrap();
         Ok(ProductInfrigement::from_gpt_response(
@@ -110,7 +112,7 @@ impl Groq {
         ))
     }
 
-    async fn assess_company_v1(
+    pub async fn assess_company_v1(
         &self,
         patent: &Patent,
         company: &Company,
@@ -126,12 +128,12 @@ impl Groq {
         infringements
     }
 
-    async fn summarize_v1(
+    pub async fn summarize_v1(
         &self,
         patent: &Patent,
         company: &Company,
         infringements: &Vec<ProductInfrigement>,
-    ) -> String {
+    ) -> Result<String, reqwest::Error> {
         let infrigements_str = infringements
             .iter()
             .map(|i| i.to_string())
@@ -149,10 +151,24 @@ impl Groq {
         ]);
 
         let mut body = Self::base_body();
-        body.insert("messages".to_string(), msg_json.to_string());
+        body.insert("messages".to_string(), msg_json);
 
         let request = self.build_post_request(body);
-        let response = request.send().await.unwrap();
-        response.text().await.unwrap()
+        let response_raw = request.send().await;
+        if response_raw.is_err() {
+            return Err(response_raw.err().unwrap());
+        }
+        let response_json = response_raw.unwrap().json().await;
+        if response_json.is_err() {
+            return Err(response_json.err().unwrap());
+        }
+
+        let response: Value = response_json.unwrap();
+        let response_str = response["choices"][0]["message"]["content"]
+            .as_str()
+            .unwrap()
+            .to_string();
+
+        Ok(response_str)
     }
 }

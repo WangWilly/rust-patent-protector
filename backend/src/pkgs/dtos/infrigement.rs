@@ -1,7 +1,5 @@
-use crate::pkgs::dtos::{patent::Patent, product::Product};
+use super::{patent::Patent, product::Product};
 use std::fmt;
-
-use super::patent;
 
 //////////////////////////////////////////////////////////////////////////////
 

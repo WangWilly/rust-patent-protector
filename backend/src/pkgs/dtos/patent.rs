@@ -46,19 +46,19 @@ impl Patent {
         let claims_array_str = json_data["claims"].as_str().unwrap();
         let claims_json = serde_json::from_str(claims_array_str).unwrap();
         let claims = PatentClam::from_json_array(claims_json);
-        Self {
+        Self::new(
             id,
             publication_number,
             title,
             patent_abstract,
             description,
             claims,
-        }
+        )
     }
 
-    pub fn add_claim(&mut self, claim: PatentClam) {
-        self.claims.push(claim);
-    }
+    // pub fn add_claim(&mut self, claim: PatentClam) {
+    //     self.claims.push(claim);
+    // }
 
     pub fn str_for_gpt(&self) -> String {
         let claims_str = self
@@ -95,11 +95,11 @@ pub struct Patents {
 }
 
 impl Patents {
-    pub fn new() -> Self {
-        Self {
-            pub_patent_map: HashMap::new(),
-        }
-    }
+    // pub fn new() -> Self {
+    //     Self {
+    //         pub_patent_map: HashMap::new(),
+    //     }
+    // }
 
     pub fn from_json(json_data: Value) -> Self {
         let mut pub_patent_map = HashMap::new();
@@ -110,10 +110,10 @@ impl Patents {
         Self { pub_patent_map }
     }
 
-    pub fn add_patent(&mut self, patent: Patent) {
-        self.pub_patent_map
-            .insert(patent.publication_number.clone(), patent);
-    }
+    // pub fn add_patent(&mut self, patent: Patent) {
+    //     self.pub_patent_map
+    //         .insert(patent.publication_number.clone(), patent);
+    // }
 
     pub fn get(&self, publication_number: &str) -> Option<&Patent> {
         self.pub_patent_map.get(publication_number)

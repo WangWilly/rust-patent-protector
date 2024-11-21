@@ -1,5 +1,5 @@
+use crate::pkgs::dtos::{company::Company, infrigement::ProductInfrigement, patent::Patent};
 use serde::{Deserialize, Serialize};
-use crate::pkgs::dtos::{company::Company, infrigement::{self, ProductInfrigement}, patent::Patent};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -36,10 +36,17 @@ impl AssessInfringementV1Resp {
         }
     }
 
-    pub fn from_patent_company(patent: &Patent, company: &Company, infrigements: &Vec<ProductInfrigement>, summary: &String) -> Self {
+    pub fn from_patent_company(
+        patent: &Patent,
+        company: &Company,
+        infrigements: &Vec<ProductInfrigement>,
+        summary: &String,
+    ) -> Self {
         let top_infringing_products = infrigements
             .iter()
-            .map(|infrigement| AssessInfringementV1ProductItem::from_product_infringement_dto(infrigement))
+            .map(|infrigement| {
+                AssessInfringementV1ProductItem::from_product_infringement_dto(infrigement)
+            })
             .collect();
         Self::new(
             patent.publication_number.clone(),
@@ -49,10 +56,7 @@ impl AssessInfringementV1Resp {
             summary.clone(),
         )
     }
-
-
 }
-        
 
 #[derive(Serialize)]
 pub struct AssessInfringementV1ProductItem {
@@ -83,7 +87,10 @@ impl AssessInfringementV1ProductItem {
     pub fn from_product_infringement_dto(product_infringement: &ProductInfrigement) -> Self {
         Self::new(
             product_infringement.product_name.clone(),
-            format!("{:.2}%", product_infringement.infringement_likelihood * 100.0),
+            format!(
+                "{:.2}%",
+                product_infringement.infringement_likelihood * 100.0
+            ),
             product_infringement.relevant_claims.clone(),
             product_infringement.explanation.clone(),
             product_infringement.specific_features.clone(),

@@ -1,4 +1,4 @@
-use crate::pkgs::common::{ApiResult, not_found, internal_error};
+use crate::pkgs::common::{internal_error, not_found, ApiResult};
 use crate::pkgs::ctx::Ctx;
 use crate::pkgs::dtos::infrigement;
 
@@ -49,7 +49,10 @@ async fn assess_infringement_v1(
     // Validation
     let patent = state.asset_helper.get_patents().get(&req.patent_pub_id);
     if patent.is_none() {
-        return not_found::<Json<AssessInfringementV1Resp>>(format!("Patent {} not found", req.patent_pub_id));
+        return not_found::<Json<AssessInfringementV1Resp>>(format!(
+            "Patent {} not found",
+            req.patent_pub_id
+        ));
     }
     let patent = patent.unwrap();
 
@@ -58,7 +61,10 @@ async fn assess_infringement_v1(
         .get_company_products()
         .get(req.company_name.clone());
     if company.is_none() {
-        return not_found::<Json<AssessInfringementV1Resp>>(format!("Company {} not found", req.company_name));
+        return not_found::<Json<AssessInfringementV1Resp>>(format!(
+            "Company {} not found",
+            req.company_name
+        ));
     }
     let company = company.unwrap();
 
@@ -89,6 +95,7 @@ async fn assess_infringement_v1(
     }
 
     let summary = summary.unwrap();
-    let resp = AssessInfringementV1Resp::from_patent_company(&patent, &company, &infrigements, &summary);
+    let resp =
+        AssessInfringementV1Resp::from_patent_company(&patent, &company, &infrigements, &summary);
     Ok(Json(resp))
 }

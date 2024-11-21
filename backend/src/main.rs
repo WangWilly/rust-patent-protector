@@ -3,10 +3,10 @@ use axum::{routing::get, Router};
 
 mod controllers;
 use controllers::gpt::ctrl::new as new_gpt_router;
-use controllers::root::ctrl::new as new_root_router;
-use controllers::root_v2::ctrl::new as new_root_v2_router;
 use controllers::gpt::pkgs::asset_helper::AssetHelperConfig;
 use controllers::gpt::pkgs::gpt_groq::GroqConfig;
+use controllers::root::ctrl::new as new_root_router;
+use controllers::root_v2::ctrl::new as new_root_v2_router;
 
 mod pkgs;
 use pkgs::db_helper::get_connection_pool;

@@ -24,12 +24,12 @@ impl Company {
             .iter()
             .map(|p| Product::from_json(p.clone()))
             .collect();
-        Self { name, products }
+        Self::new(name, products)
     }
 
-    pub fn add_product(&mut self, product: Product) {
-        self.products.push(product);
-    }
+    // pub fn add_product(&mut self, product: Product) {
+    //     self.products.push(product);
+    // }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -55,11 +55,11 @@ pub struct Companies {
 }
 
 impl Companies {
-    pub fn new() -> Self {
-        Self {
-            companies: HashMap::new(),
-        }
-    }
+    // pub fn new() -> Self {
+    //     Self {
+    //         companies: HashMap::new(),
+    //     }
+    // }
 
     pub fn from_json(json_data: Value) -> Self {
         let mut companies = HashMap::new();
@@ -72,9 +72,9 @@ impl Companies {
         Self { companies }
     }
 
-    pub fn add_company(&mut self, company: Company) {
-        self.companies.insert(company.name.clone(), company);
-    }
+    // pub fn add_company(&mut self, company: Company) {
+    //     self.companies.insert(company.name.clone(), company);
+    // }
 
     pub fn get(&self, name: String) -> Option<&Company> {
         self.companies.get(&name)

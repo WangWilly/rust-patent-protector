@@ -31,13 +31,13 @@ impl ProductInfrigement {
         }
     }
 
-    pub fn str_for_gpt(&self) -> String {
-        let specific_features_str = self.specific_features.join(", ");
-        format!(
-            "The evidence suggests that the product '{}' infringes on the patent '{}' with a likelihood of {}. The explanation is: {}. The specific features are {}",
-            self.product_name, self.patent_pub_id, self.infringement_likelihood, self.explanation, specific_features_str
-        )
-    }
+    // pub fn str_for_gpt(&self) -> String {
+    //     let specific_features_str = self.specific_features.join(", ");
+    //     format!(
+    //         "The evidence suggests that the product '{}' infringes on the patent '{}' with a likelihood of {}. The explanation is: {}. The specific features are {}",
+    //         self.product_name, self.patent_pub_id, self.infringement_likelihood, self.explanation, specific_features_str
+    //     )
+    // }
 
     pub fn from_gpt_response(patent: &Patent, product: &Product, response: String) -> Self {
         let lines = response.split("\n").collect::<Vec<&str>>();

@@ -2,15 +2,17 @@ use axum::middleware::from_fn;
 use axum::{routing::get, Router};
 
 mod controllers;
+use controllers::gpt::ctrl::new as new_gpt_router;
 use controllers::root::ctrl::new as new_root_router;
 use controllers::root_v2::ctrl::new as new_root_v2_router;
 
 mod pkgs;
+use controllers::gpt::pkgs::asset_helper::AssetHelperConfig;
 use pkgs::db_helper::get_connection_pool;
 use pkgs::errors::handler_404;
+use pkgs::logging::Level;
 
 use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
-use tracing::{info, Level};
 
 mod middlewares;
 use middlewares::ctx::ctx_constructor;
@@ -35,9 +37,14 @@ async fn main() {
 
     ////////////////////////////////////////////////////////////////////////////
 
+    let asset_helper_cfg = AssetHelperConfig::from_env();
+
+    ////////////////////////////////////////////////////////////////////////////
+
     info!("Creating routers...");
     let root_router = new_root_router(db.clone());
     let root_v2_router = new_root_v2_router(db.clone());
+    let gpt_router = new_gpt_router(db.clone(), asset_helper_cfg);
     info!("Routers created.");
 
     ////////////////////////////////////////////////////////////////////////////
@@ -47,6 +54,7 @@ async fn main() {
         .route("/", get(|| async { "Hello, World!" }))
         .merge(root_router)
         .merge(root_v2_router)
+        .merge(gpt_router)
         .fallback(handler_404)
         .layer(from_fn(ctx_constructor))
         .layer(

@@ -69,7 +69,11 @@ impl Groq {
     ////////////////////////////////////////////////////////////////////////////
     /// v1
 
-    async fn assess_product_v1(&self, patent: &Patent, product: &Product) -> Result<ProductInfrigement, reqwest::Error> {
+    async fn assess_product_v1(
+        &self,
+        patent: &Patent,
+        product: &Product,
+    ) -> Result<ProductInfrigement, reqwest::Error> {
         let msg_json = json!([
             {
                 "role": "system",
@@ -96,11 +100,21 @@ impl Groq {
         }
 
         let response_json: serde_json::Value = json_response.unwrap();
-        let response_str = response_json["choices"][0]["message"]["content"].as_str().unwrap();
-        Ok(ProductInfrigement::from_gpt_response(patent, product, response_str.to_string()))
+        let response_str = response_json["choices"][0]["message"]["content"]
+            .as_str()
+            .unwrap();
+        Ok(ProductInfrigement::from_gpt_response(
+            patent,
+            product,
+            response_str.to_string(),
+        ))
     }
 
-    async fn assess_company_v1(&self, patent: &Patent, company: &Company) -> Vec<ProductInfrigement> {
+    async fn assess_company_v1(
+        &self,
+        patent: &Patent,
+        company: &Company,
+    ) -> Vec<ProductInfrigement> {
         let mut infringements = Vec::new();
         for product in &company.products {
             let infringement = self.assess_product_v1(patent, product).await;

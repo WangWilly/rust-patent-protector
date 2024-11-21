@@ -3,6 +3,7 @@ pub mod ctx;
 pub mod db_helper;
 pub mod dtos;
 pub mod errors;
+pub mod logging;
 pub mod models;
 pub mod repos;
 pub mod schema;

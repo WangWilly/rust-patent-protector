@@ -1,7 +1,9 @@
+use serde_json::Value;
 use std::fmt;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Clone)]
 pub struct Product {
     pub name: String,
     pub description: String,
@@ -10,6 +12,13 @@ pub struct Product {
 impl Product {
     pub fn new(name: String, description: String) -> Self {
         Self { name, description }
+    }
+
+    pub fn from_json(json_data: Value) -> Self {
+        Self {
+            name: json_data["name"].as_str().unwrap().to_string(),
+            description: json_data["description"].as_str().unwrap().to_string(),
+        }
     }
 
     pub fn str_for_gpt(&self) -> String {

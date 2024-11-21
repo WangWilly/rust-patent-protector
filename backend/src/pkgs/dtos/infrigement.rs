@@ -1,8 +1,7 @@
-use std::fmt;
 use crate::pkgs::dtos::{patent::Patent, product::Product};
+use std::fmt;
 
 use super::patent;
-
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -51,12 +50,18 @@ impl ProductInfrigement {
         for line in lines {
             if line.starts_with("relevant_claims:") {
                 let claims_str = line.split(":").collect::<Vec<&str>>()[1].trim();
-                relevant_claims = claims_str.split(",").map(|s| s.trim().to_string()).collect();
+                relevant_claims = claims_str
+                    .split(",")
+                    .map(|s| s.trim().to_string())
+                    .collect();
             } else if line.starts_with("explanation:") {
                 explanation = line.split(":").collect::<Vec<&str>>()[1].trim().to_string();
             } else if line.starts_with("specific_features:") {
                 let features_str = line.split(":").collect::<Vec<&str>>()[1].trim();
-                specific_features = features_str.split(",").map(|s| s.trim().to_string()).collect();
+                specific_features = features_str
+                    .split(",")
+                    .map(|s| s.trim().to_string())
+                    .collect();
             }
         }
 

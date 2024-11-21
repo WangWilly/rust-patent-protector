@@ -1,7 +1,9 @@
+use serde_json::Value;
 use std::fmt;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Clone)]
 pub struct PatentClam {
     pub patent_number: String,
     pub text: String,
@@ -13,6 +15,22 @@ impl PatentClam {
             patent_number,
             text,
         }
+    }
+
+    pub fn from_json(json_data: Value) -> Self {
+        Self::new(
+            json_data["num"].as_str().unwrap().to_string(),
+            json_data["text"].as_str().unwrap().to_string(),
+        )
+    }
+
+    pub fn from_json_array(json_data: Value) -> Vec<Self> {
+        json_data
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|p| Self::from_json(p.clone()))
+            .collect()
     }
 }
 

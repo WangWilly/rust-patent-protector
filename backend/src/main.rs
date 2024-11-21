@@ -44,7 +44,7 @@ async fn main() {
     info!("Creating routers...");
     let root_router = new_root_router(db.clone());
     let root_v2_router = new_root_v2_router(db.clone());
-    let gpt_router = new_gpt_router(db.clone(), asset_helper_cfg);
+    let gpt_router = new_gpt_router(asset_helper_cfg);
     info!("Routers created.");
 
     ////////////////////////////////////////////////////////////////////////////

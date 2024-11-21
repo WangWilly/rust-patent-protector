@@ -1,5 +1,5 @@
-use axum::{routing::get, Router};
 use axum::middleware::from_fn;
+use axum::{routing::get, Router};
 
 mod controllers;
 use controllers::root::ctrl::new as new_root_router;
@@ -48,9 +48,7 @@ async fn main() {
         .merge(root_router)
         .merge(root_v2_router)
         .fallback(handler_404)
-        .layer(
-            from_fn(ctx_constructor)
-        )
+        .layer(from_fn(ctx_constructor))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new().level(Level::INFO))

@@ -34,7 +34,7 @@ impl Ctx {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Extractor 
+/// Extractor
 /// ugly but direct implementation from axum, until "async trait fn" are in stable rust, instead of importing some 3rd party macro
 /// Extractor: makes it possible to specify Ctx as a param - fetches the result from the header parts extension
 
@@ -63,7 +63,7 @@ impl<S: Send + Sync> FromRequestParts<S> for Ctx {
                 "EXTRACTOR"
             );
 
-            // It tries to get a Ctx from the request parts' extensions. 
+            // It tries to get a Ctx from the request parts' extensions.
             // If successful, it clones the Ctx and returns it. If not, it returns an ApiError with a new UUID and an AuthFailCtxNotInRequestExt error.
             parts.extensions.get::<Ctx>().cloned().ok_or(ApiError {
                 req_id: Uuid::new_v4(),

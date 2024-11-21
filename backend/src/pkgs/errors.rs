@@ -1,8 +1,8 @@
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use uuid::Uuid;
 use std::fmt;
+use uuid::Uuid;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Handlers
@@ -35,7 +35,9 @@ impl fmt::Display for Error {
         match self {
             Self::Generic { description } => write!(f, "{description}"),
             Self::LoginFail => write!(f, "Login fail"),
-            Self::AuthFailCtxNotInRequestExt => write!(f, "Auth fail - Ctx not in request extensions"),
+            Self::AuthFailCtxNotInRequestExt => {
+                write!(f, "Auth fail - Ctx not in request extensions")
+            }
             Self::DbRecordNoResult { id, .. } => write!(f, "No record for id {id}"),
         }
     }
@@ -57,8 +59,7 @@ impl IntoResponse for ApiError {
         let status_code = match self.error {
             Error::DbRecordNoResult { .. } => StatusCode::NOT_FOUND,
             Error::AuthFailCtxNotInRequestExt => StatusCode::UNAUTHORIZED,
-            Error::Generic { .. }
-            | Error::LoginFail => StatusCode::FORBIDDEN,
+            Error::Generic { .. } | Error::LoginFail => StatusCode::FORBIDDEN,
         };
         let body = Json(json!({
             "error": {

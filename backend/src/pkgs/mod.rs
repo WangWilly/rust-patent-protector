@@ -1,6 +1,7 @@
 pub mod common;
 pub mod ctx;
 pub mod db_helper;
+pub mod dtos;
 pub mod errors;
 pub mod models;
 pub mod repos;

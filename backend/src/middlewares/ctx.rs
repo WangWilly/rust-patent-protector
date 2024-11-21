@@ -6,10 +6,7 @@ use uuid::Uuid;
 
 // State(CtxState { _db, key_dec, .. }): State<CtxState>, // TODO: auth
 // cookies: Cookies,
-pub async fn ctx_constructor(
-    mut req: Request,
-    next: Next,
-) -> Response {
+pub async fn ctx_constructor(mut req: Request, next: Next) -> Response {
     println!("->> {:<12} - mw_ctx_constructor", "MIDDLEWARE");
 
     let uuid = Uuid::new_v4();

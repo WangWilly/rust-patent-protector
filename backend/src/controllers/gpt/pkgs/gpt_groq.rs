@@ -1,10 +1,13 @@
 use crate::pkgs::dtos::{
     company::Company, infrigement::ProductInfrigement, patent::Patent, product::Product,
 };
+use crate::pkgs::errors::Error;
 use reqwest::header::HeaderMap;
 use reqwest::{Client, RequestBuilder};
 use serde_json::{json, Value};
 use std::collections::HashMap;
+
+use crate::error;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -75,7 +78,7 @@ impl Groq {
         &self,
         patent: &Patent,
         product: &Product,
-    ) -> Result<ProductInfrigement, reqwest::Error> {
+    ) -> Result<ProductInfrigement, Error> {
         let msg_json = json!([
             {
                 "role": "system",
@@ -93,22 +96,33 @@ impl Groq {
         let request = self.build_post_request(body);
         let response_raw = request.send().await;
         if response_raw.is_err() {
-            return Err(response_raw.err().unwrap());
+            let err = Error::ClientReqError {
+                source: format!("{}", response_raw.err().unwrap()),
+            };
+            return Err(err);
         }
 
         let json_response = response_raw.unwrap().json().await;
         if json_response.is_err() {
-            return Err(json_response.err().unwrap());
+            let err = Error::ClientReqError {
+                source: format!("{}", json_response.err().unwrap()),
+            };
+            return Err(err);
         }
 
         let response: Value = json_response.unwrap();
-        let response_str = response["choices"][0]["message"]["content"]
-            .as_str()
-            .unwrap();
+        let response_str = response["choices"][0]["message"]["content"].as_str();
+        if response_str.is_none() {
+            let err = Error::ClientReqError {
+                source: "response_str is None".to_string(),
+            };
+            return Err(err);
+        }
+
         Ok(ProductInfrigement::from_gpt_response(
             patent,
             product,
-            response_str.to_string(),
+            response_str.unwrap().to_string(),
         ))
     }
 
@@ -121,6 +135,7 @@ impl Groq {
         for product in &company.products {
             let infringement = self.assess_product_v1(patent, product).await;
             if infringement.is_err() {
+                error!("Error assessing product: {}", infringement.err().unwrap());
                 continue;
             }
             infringements.push(infringement.unwrap());

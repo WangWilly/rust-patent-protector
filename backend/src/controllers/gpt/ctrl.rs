@@ -1,15 +1,16 @@
+use axum::{extract::State, routing::post, Json, Router};
+
+use crate::info;
 use crate::pkgs::common::{internal_error, not_found, ApiResult};
 use crate::pkgs::ctx::Ctx;
 use crate::pkgs::dtos::infrigement;
-
-use axum::{extract::State, routing::post, Json, Router};
-
-use tracing::info;
+use crate::pkgs::errors::add_timeout_layer;
 
 use super::dtos::assess_infringement_v1::{AssessInfringementV1Req, AssessInfringementV1Resp};
 use super::pkgs::asset_helper::{AssetHelper, AssetHelperConfig};
 use super::pkgs::gpt_groq::Groq;
 use super::pkgs::gpt_groq::GroqConfig;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -28,12 +29,15 @@ pub fn new(asset_helper_cfg: AssetHelperConfig, groq_cfg: GroqConfig) -> Router 
 
     let s = CtrlState { asset_helper, groq };
 
-    Router::new()
+    let res = Router::new()
         .route(
             "/api/gpt/v1/assess_infringement",
             post(assess_infringement_v1),
         )
-        .with_state(s)
+        .with_state(s);
+
+    // TODO: configure timeout
+    add_timeout_layer(res, 120)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

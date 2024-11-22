@@ -1,12 +1,18 @@
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use axum::{
+    error_handling::HandleErrorLayer, http, response::IntoResponse, BoxError, Json, Router,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::fmt;
+use std::time::Duration;
+use tower::{timeout::TimeoutLayer, ServiceBuilder};
 use uuid::Uuid;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Handlers
 ////////////////////////////////////////////////////////////////////////////////
+
+type StatusCode = http::StatusCode;
 
 // https://github.com/tokio-rs/axum/blob/main/examples/global-404-handler/src/main.rs
 pub async fn handler_404() -> impl IntoResponse {
@@ -16,6 +22,18 @@ pub async fn handler_404() -> impl IntoResponse {
     });
 
     (StatusCode::NOT_FOUND, Json(data))
+}
+
+pub fn add_timeout_layer(router: Router, timeout_secs: u64) -> Router {
+    router.layer(
+        ServiceBuilder::new()
+            // this middleware goes above `TimeoutLayer` because it will receive
+            // errors returned by `TimeoutLayer`
+            .layer(HandleErrorLayer::new(|_: BoxError| async {
+                StatusCode::REQUEST_TIMEOUT
+            }))
+            .layer(TimeoutLayer::new(Duration::from_secs(timeout_secs))),
+    )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +46,8 @@ pub enum Error {
     LoginFail,
     AuthFailCtxNotInRequestExt,
     DbRecordNoResult { source: String, id: String },
+
+    ClientReqError { source: String },
 }
 
 impl fmt::Display for Error {
@@ -39,6 +59,7 @@ impl fmt::Display for Error {
                 write!(f, "Auth fail - Ctx not in request extensions")
             }
             Self::DbRecordNoResult { id, .. } => write!(f, "No record for id {id}"),
+            Self::ClientReqError { source } => write!(f, "Client request error: {source}"),
         }
     }
 }
@@ -60,6 +81,7 @@ impl IntoResponse for ApiError {
             Error::DbRecordNoResult { .. } => StatusCode::NOT_FOUND,
             Error::AuthFailCtxNotInRequestExt => StatusCode::UNAUTHORIZED,
             Error::Generic { .. } | Error::LoginFail => StatusCode::FORBIDDEN,
+            Error::ClientReqError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
         };
         let body = Json(json!({
             "error": {

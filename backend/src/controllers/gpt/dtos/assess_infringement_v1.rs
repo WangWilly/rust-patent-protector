@@ -1,5 +1,9 @@
-use crate::pkgs::dtos::{company::Company, infrigement::ProductInfrigement, patent::Patent};
+use crate::pkgs::{
+    dtos::{company::Company, infrigement::ProductInfrigement, patent::Patent},
+    time::iso8601,
+};
 use serde::{Deserialize, Serialize};
+use std::time::SystemTime;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -48,10 +52,11 @@ impl AssessInfringementV1Resp {
                 AssessInfringementV1ProductItem::from_product_infringement_dto(infrigement)
             })
             .collect();
+
         Self::new(
             patent.publication_number.clone(),
             company.name.clone(),
-            "2021-09-01".to_string(),
+            iso8601(&SystemTime::now()),
             top_infringing_products,
             summary.clone(),
         )

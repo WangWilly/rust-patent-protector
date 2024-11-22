@@ -40,6 +40,8 @@ docker compose up -d
 
 - https://play.rust-lang.org/?version=stable&mode=debug&edition=2015&gist=2794e5f6f7015cb3c018dca111cf732e
 
+- https://users.rust-lang.org/t/why-use-diesel-when-its-not-async/90160
+
 ## Learning Rust
 
 - https://doc.rust-lang.org/cargo/guide/project-layout.html

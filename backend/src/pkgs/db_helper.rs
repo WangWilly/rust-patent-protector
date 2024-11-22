@@ -1,9 +1,17 @@
 use diesel::prelude::*;
 use diesel::r2d2::ConnectionManager;
 use diesel::r2d2::Pool;
+use diesel::result::Error;
+
+////////////////////////////////////////////////////////////////////////////////
+
+pub type DbPool = Pool<ConnectionManager<PgConnection>>;
+pub type DbResult<T> = Result<T, Error>;
+
+////////////////////////////////////////////////////////////////////////////////
 
 // https://docs.rs/diesel/latest/diesel/r2d2/index.html
-pub fn get_connection_pool() -> Pool<ConnectionManager<PgConnection>> {
+pub fn get_connection_pool() -> DbPool {
     let database_host = std::env::var("DATABASE_HOST").expect("DATABASE_HOST must be set");
     let database_port = std::env::var("DATABASE_PORT").expect("DATABASE_PORT must be set");
     let database_user = std::env::var("DATABASE_USER").expect("DATABASE_USER must be set");

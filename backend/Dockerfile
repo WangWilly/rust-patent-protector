@@ -3,25 +3,24 @@
 FROM lukemathwalker/cargo-chef:latest as chef
 WORKDIR /app
 
-# TODO:
-# ################################################################################
-# # Build planner
-# FROM chef AS planner
-# COPY ./backend/Cargo.toml ./
-# COPY ./backend/src ./src
-# RUN cargo chef prepare
+################################################################################
+# Build planner
+FROM chef AS planner
+COPY ./backend/Cargo.toml ./backend/Cargo.lock ./
+COPY ./backend/src ./src
+RUN cargo chef prepare --recipe-path recipe.json
 
 ################################################################################
 # Build stage
 FROM chef AS builder
-# TODO: COPY --from=planner /app/recipe.json .
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
 
 COPY ./backend/Cargo.toml ./backend/Cargo.lock ./
 COPY ./backend/src ./src
-# TODO: RUN cargo chef cook --release
 
 RUN cargo build --release
-RUN mv ./target/release/backend ./app
+RUN mv ./target/release/backend ./entrypoint
 
 ################################################################################
 # Runtime stage
@@ -31,7 +30,7 @@ WORKDIR /app
 # Install PostgreSQL client libraries
 RUN apt-get update && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/app ./entrypoint
+COPY --from=builder /app/entrypoint ./
 COPY ./backend/assets ./assets
 
 ENTRYPOINT ["/app/entrypoint"]

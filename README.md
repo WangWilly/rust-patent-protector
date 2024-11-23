@@ -29,13 +29,13 @@ docker compose up -d
 
 ### Deploy
 
-- https://www.reddit.com/r/rust/comments/16bswvl/looking_for_the_perfect_dockerfile_for_rust/
-- https://stackoverflow.com/questions/49098753/unable-to-run-a-docker-image-with-a-rust-executable
-- https://users.rust-lang.org/t/release-binary-not-working-in-docker/36383/4
-- https://stackoverflow.com/questions/30780780/difference-between-stdout-and-dev-stdout
-- https://stackoverflow.com/questions/74957107/how-to-conditionally-use-tracings-non-blocking-writer-instead-of-stdout
-- https://www.shuttle.dev/blog/2024/01/09/getting-started-tracing-rust
+- 🤔 https://www.reddit.com/r/rust/comments/16bswvl/looking_for_the_perfect_dockerfile_for_rust/
 - https://stackoverflow.com/questions/10319652/check-if-a-file-is-executable
+- https://www.shuttle.dev/blog/2024/01/09/getting-started-tracing-rust
+- ~~https://stackoverflow.com/questions/49098753/unable-to-run-a-docker-image-with-a-rust-executable~~
+- https://users.rust-lang.org/t/release-binary-not-working-in-docker/36383/4
+- ~~https://stackoverflow.com/questions/30780780/difference-between-stdout-and-dev-stdout~~
+- ~~https://stackoverflow.com/questions/74957107/how-to-conditionally-use-tracings-non-blocking-writer-instead-of-stdout~~
 
 ```bash
 ./scripts/build-backend.sh

@@ -16,7 +16,7 @@ WORKDIR /app
 FROM chef AS builder
 # TODO: COPY --from=planner /app/recipe.json .
 
-COPY ./backend/Cargo.toml ./
+COPY ./backend/Cargo.toml ./backend/Cargo.lock ./
 COPY ./backend/src ./src
 # TODO: RUN cargo chef cook --release
 

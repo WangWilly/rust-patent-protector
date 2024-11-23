@@ -1,0 +1,52 @@
+version: '3'
+services:
+  backend:
+    image: patent-protector/backend:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # TODO: APP_HOST: "0.0.0.0"
+      # TODO: APP_PORT: 3000
+      GPT_GROQ_API_KEY: your_gpt_groq_api_key
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: patent-protector-2024
+      DATABASE_USER: patent-protector-2024
+      DATABASE_PASSWORD: patent-protector-2024
+      ASSET_HELPER_COMPANY_PRODUCTS_PATH: /app/assets/company_products.json
+      ASSET_HELPER_PATENTS_PATH: /app/assets/patents.json
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  migration:
+    image: patent-protector/migration:latest
+    environment:
+      DATABASE_URL: postgres://patent-protector-2024:patent-protector-2024@db:5432/patent-protector-2024
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # frontend:
+  #   image: patent-protector/frontend:latest
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"
+
+  db:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: patent-protector-2024
+      POSTGRES_USER: patent-protector-2024
+      POSTGRES_PASSWORD: patent-protector-2024
+    volumes:
+      - './storage/db:/var/lib/postgresql/data'
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER}']
+      interval: 10s
+      timeout: 60s
+      retries: 10

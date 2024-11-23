@@ -13,4 +13,7 @@ if [ "$isDev" = "dev" ]; then
     diesel migration run
 else
     echo "Running in production mode"
+
+    diesel migration run
+    # sleep infinity
 fi

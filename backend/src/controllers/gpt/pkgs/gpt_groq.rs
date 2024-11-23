@@ -19,7 +19,7 @@ pub struct GroqConfig {
 impl GroqConfig {
     pub fn from_env() -> Self {
         Self {
-            api_key: std::env::var("GPT_GROQ_API_KEY").unwrap(),
+            api_key: std::env::var("GPT_GROQ_API_KEY").expect("GPT_GROQ_API_KEY is required"),
         }
     }
 }

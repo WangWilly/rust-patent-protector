@@ -15,5 +15,5 @@ else
     echo "Running in production mode"
 
     diesel migration run
-    # sleep infinity
+    sleep infinity
 fi

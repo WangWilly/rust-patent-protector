@@ -1,25 +1,28 @@
-use std::{env, fs};
+use std::fs;
+
+use serde::Deserialize;
 
 use crate::info;
-
 use crate::pkgs::dtos::{company::Companies, patent::Patents};
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#[derive(Deserialize)]
 pub struct AssetHelperConfig {
     pub company_products_path: String,
     pub patents_path: String,
 }
 
 impl AssetHelperConfig {
-    pub fn from_env() -> Self {
-        Self {
-            company_products_path: env::var("ASSET_HELPER_COMPANY_PRODUCTS_PATH")
-                .expect("ASSET_HELPER_COMPANY_PRODUCTS_PATH is required"),
-            patents_path: env::var("ASSET_HELPER_PATENTS_PATH")
-                .expect("ASSET_HELPER_PATENTS_PATH is required"),
-        }
-    }
+    // TODO: deprecated
+    // pub fn from_env() -> Self {
+    //     Self {
+    //         company_products_path: env::var("ASSET_HELPER_COMPANY_PRODUCTS_PATH")
+    //             .expect("ASSET_HELPER_COMPANY_PRODUCTS_PATH is required"),
+    //         patents_path: env::var("ASSET_HELPER_PATENTS_PATH")
+    //             .expect("ASSET_HELPER_PATENTS_PATH is required"),
+    //     }
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

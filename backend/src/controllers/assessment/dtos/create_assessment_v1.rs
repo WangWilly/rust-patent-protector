@@ -71,7 +71,8 @@ impl CreateAssessmentV1Resp {
         let binding = model.top_infringing_products.clone().unwrap();
         let mut top_infringing_products: Vec<AssessInfringementV1ProductItem> = vec![];
         for item in binding.as_array().unwrap() {
-            let product: AssessInfringementV1ProductItem = serde_json::from_value(item.clone()).unwrap();
+            let product: AssessInfringementV1ProductItem =
+                serde_json::from_value(item.clone()).unwrap();
             top_infringing_products.push(product);
         }
 

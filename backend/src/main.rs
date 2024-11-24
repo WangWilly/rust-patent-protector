@@ -1,8 +1,11 @@
 use axum::middleware::from_fn;
 use axum::{routing::get, Router};
 
+use serde::Deserialize;
+
+use tokio::signal;
+
 mod controllers;
-use controllers::assessment;
 use controllers::assessment::ctrl::new as new_assessment_router;
 use controllers::gpt::ctrl::new as new_gpt_router;
 use controllers::gpt::pkgs::asset_helper::AssetHelperConfig;
@@ -12,6 +15,7 @@ use controllers::root_v2::ctrl::new as new_root_v2_router;
 
 mod pkgs;
 use pkgs::db_helper::get_connection_pool;
+use pkgs::env::get_env;
 use pkgs::errors::handler_404;
 use pkgs::logging::Level;
 
@@ -22,13 +26,46 @@ use middlewares::ctx::ctx_constructor;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+fn default_debug() -> bool {
+    false
+}
+
+fn default_app_host() -> String {
+    "localhost".to_string()
+}
+
+fn default_app_port() -> String {
+    "3000".to_string()
+}
+
+#[derive(Deserialize)]
+struct MainConfig {
+    #[serde(default = "default_debug")]
+    debug: bool,
+    #[serde(default = "default_app_host")]
+    app_host: String,
+    #[serde(default = "default_app_port")]
+    app_port: String,
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt()
-        .with_target(false)
-        // .json()
-        .pretty()
-        .init();
+    let main_cfg = get_env::<MainConfig>("").unwrap();
+
+    if main_cfg.debug {
+        tracing_subscriber::fmt()
+            .with_max_level(Level::DEBUG)
+            .json()
+            .init();
+    } else {
+        tracing_subscriber::fmt()
+            .with_max_level(Level::INFO)
+            .with_target(false)
+            .pretty()
+            .init();
+    }
 
     info!("Starting server...");
 
@@ -40,8 +77,8 @@ async fn main() {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    let asset_helper_cfg = AssetHelperConfig::from_env();
-    let groq_cfg = GroqConfig::from_env();
+    let asset_helper_cfg = get_env::<AssetHelperConfig>("ASSET_HELPER_").unwrap();
+    let groq_cfg = get_env::<GroqConfig>("GPT_GROQ_").unwrap();
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +108,41 @@ async fn main() {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-    info!("Server stopped.");
+    let bind_url = format!("{}:{}", main_cfg.app_host, main_cfg.app_port);
+    info!("Starting server at: {}", bind_url);
+    let listener = tokio::net::TcpListener::bind(bind_url).await.unwrap();
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await
+        .unwrap();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {
+            info!("Ctrl-C received, shutting down...");
+        },
+        _ = terminate => {
+            info!("Terminate signal received, shutting down...");
+        },
+    }
 }

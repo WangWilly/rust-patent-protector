@@ -1,27 +1,32 @@
+use std::collections::HashMap;
+
+use serde::Deserialize;
+use serde_json::{json, Value};
+
+use reqwest::header::HeaderMap;
+use reqwest::{Client, RequestBuilder};
+
 use crate::pkgs::dtos::{
     company::Company, infrigement::ProductInfrigement, patent::Patent, product::Product,
 };
 use crate::pkgs::errors::Error;
-use reqwest::header::HeaderMap;
-use reqwest::{Client, RequestBuilder};
-use serde_json::{json, Value};
-use std::collections::HashMap;
 
 use crate::error;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
 pub struct GroqConfig {
     pub api_key: String,
 }
 
 impl GroqConfig {
-    pub fn from_env() -> Self {
-        Self {
-            api_key: std::env::var("GPT_GROQ_API_KEY").expect("GPT_GROQ_API_KEY is required"),
-        }
-    }
+    // TODO: deprecated
+    // pub fn from_env() -> Self {
+    //     Self {
+    //         api_key: std::env::var("GPT_GROQ_API_KEY").expect("GPT_GROQ_API_KEY is required"),
+    //     }
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY ./backend/Cargo.toml ./backend/Cargo.lock ./
 COPY ./backend/src ./src
 
-RUN cargo build --release
+RUN cargo build --release --bin backend
 RUN mv ./target/release/backend ./entrypoint
 
 ################################################################################

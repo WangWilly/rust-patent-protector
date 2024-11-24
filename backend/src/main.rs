@@ -2,6 +2,8 @@ use axum::middleware::from_fn;
 use axum::{routing::get, Router};
 
 mod controllers;
+use controllers::assessment;
+use controllers::assessment::ctrl::new as new_assessment_router;
 use controllers::gpt::ctrl::new as new_gpt_router;
 use controllers::gpt::pkgs::asset_helper::AssetHelperConfig;
 use controllers::gpt::pkgs::gpt_groq::GroqConfig;
@@ -47,6 +49,7 @@ async fn main() {
     let root_router = new_root_router(db.clone());
     let root_v2_router = new_root_v2_router(db.clone());
     let gpt_router = new_gpt_router(asset_helper_cfg, groq_cfg);
+    let assessment_router = new_assessment_router(db.clone());
     info!("Routers created.");
 
     ////////////////////////////////////////////////////////////////////////////
@@ -57,6 +60,7 @@ async fn main() {
         .merge(root_router)
         .merge(root_v2_router)
         .merge(gpt_router)
+        .merge(assessment_router)
         .fallback(handler_404)
         .layer(from_fn(ctx_constructor))
         .layer(

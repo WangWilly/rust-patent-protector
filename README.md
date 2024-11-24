@@ -17,6 +17,9 @@ curl --proto '=https' --tlsv1.2 -LsSf https://github.com/diesel-rs/diesel/releas
 cd develop-gears
 docker compose up -d
 
+# Database tables
+diesel migration generate [migration-name]
+
 # Run migrations
 ./scripts/migrate.sh
 ```

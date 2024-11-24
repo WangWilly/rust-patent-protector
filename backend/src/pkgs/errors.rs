@@ -46,6 +46,7 @@ pub enum Error {
     LoginFail,
     AuthFailCtxNotInRequestExt,
     DbRecordNoResult { source: String, id: String },
+    DbFail,
 
     ClientReqError { source: String },
 }
@@ -59,6 +60,7 @@ impl fmt::Display for Error {
                 write!(f, "Auth fail - Ctx not in request extensions")
             }
             Self::DbRecordNoResult { id, .. } => write!(f, "No record for id {id}"),
+            Self::DbFail => write!(f, "Database error"),
             Self::ClientReqError { source } => write!(f, "Client request error: {source}"),
         }
     }
@@ -81,7 +83,7 @@ impl IntoResponse for ApiError {
             Error::DbRecordNoResult { .. } => StatusCode::NOT_FOUND,
             Error::AuthFailCtxNotInRequestExt => StatusCode::UNAUTHORIZED,
             Error::Generic { .. } | Error::LoginFail => StatusCode::FORBIDDEN,
-            Error::ClientReqError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::ClientReqError { .. } | Error::DbFail => StatusCode::INTERNAL_SERVER_ERROR,
         };
         let body = Json(json!({
             "error": {

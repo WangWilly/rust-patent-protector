@@ -3,6 +3,8 @@ use std::time::SystemTime;
 
 use crate::pkgs::schema::test_logs;
 
+////////////////////////////////////////////////////////////////////////////////
+
 #[derive(Queryable)]
 pub struct TestLog {
     pub id: i32,

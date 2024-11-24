@@ -63,7 +63,7 @@ impl AssessInfringementV1Resp {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct AssessInfringementV1ProductItem {
     pub product_name: String,
     pub infringement_likelihood: String,
